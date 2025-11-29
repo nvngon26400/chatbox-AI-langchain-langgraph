@@ -311,6 +311,21 @@ header {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
+/* Action buttons always visible (desktop + mobile) */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(37, 37, 56, 0.9);
+  border: 1px solid rgba(45, 45, 68, 0.8);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -433,6 +448,8 @@ header {
   --accent-1: rgba(15, 118, 110, 0.3);
   --accent-border: rgba(45, 212, 191, 0.4);
   --overlay: rgba(0, 0, 0, 0.5);
+  --bg-image: none;
+  --bg-image-opacity: 0;
 }
 
 [data-theme="light"] {
@@ -454,6 +471,24 @@ header {
 body {
   background: var(--bg);
   color: var(--text);
+}
+
+.app {
+  position: relative;
+}
+
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: var(--bg-image-opacity);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .sidebar {
@@ -497,4 +532,155 @@ body {
 
 .overlay {
   background: var(--overlay);
+}
+
+/* ===================== */
+/* Custom scrollbar (dark + light theme) */
+/* ===================== */
+
+/* Reusable scrollbar class */
+.scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--primary) var(--surface); /* Firefox */
+}
+
+/* WebKit browsers */
+.scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gradient-1), var(--gradient-2));
+  border-radius: 10px;
+  border: 2px solid var(--surface);
+  background-size: 200% 200%;
+  animation: scrollbarGradient 8s ease-in-out infinite;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.1);
+}
+
+/* Apply scrollbar to chat window too */
+.chat-window {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--bg);
+}
+
+.chat-window::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gradient-1), var(--gradient-2));
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+  background-size: 200% 200%;
+  animation: scrollbarGradient 8s ease-in-out infinite;
+}
+
+/* Animated gradient movement */
+@keyframes scrollbarGradient {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .scrollbar::-webkit-scrollbar-thumb,
+  .chat-window::-webkit-scrollbar-thumb {
+    animation: none;
+  }
+}
+
+/* ===================== */
+/* Background picker responsive classes */
+/* ===================== */
+
+.bg-menu {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  padding: 10px;
+  z-index: 2000;
+  width: min(90vw, 380px);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.bg-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.bg-thumb {
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bg-thumb.selected {
+  border: 2px solid var(--primary);
+}
+
+.bg-thumb img {
+  width: 100%;
+  height: 60px;
+  object-fit: cover;
+  display: block;
+}
+
+.bg-menu-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .bg-grid { grid-template-columns: repeat(3, 1fr); }
+  .bg-thumb img { height: 54px; }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .bg-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* On small screens, fix panel to viewport so it won't be clipped */
+@media (max-width: 768px) {
+  .bg-menu {
+    position: fixed;
+    right: 12px;
+    left: 12px;
+    top: 72px; /* below header */
+    width: auto;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1025px) {
+  .bg-menu { width: 420px; }
 }

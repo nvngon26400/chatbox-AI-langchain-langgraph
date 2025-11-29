@@ -26,6 +26,51 @@ const API_BASE = isLocal
   : "";
 
 function App() {
+  const BACKGROUND_IMAGES = [
+    { id: "bg-1", name: "Aurora", url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-2", name: "Nebula", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-3", name: "Mountains", url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-4", name: "City Night", url: "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-5", name: "Ocean", url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-6", name: "Forest", url: "https://picsum.photos/seed/forest/1600/900" },
+    { id: "bg-7", name: "Desert", url: "https://picsum.photos/seed/desert/1600/900" },
+    { id: "bg-8", name: "Gradient Waves", url: "https://picsum.photos/seed/gradientwaves/1600/900" },
+    { id: "bg-9", name: "Stars", url: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-10", name: "Abstract Colors", url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80" },
+    { id: "bg-11", name: "Snow Peaks", url: "https://picsum.photos/seed/snow/1600/900" },
+    { id: "bg-12", name: "City Lights", url: "https://picsum.photos/seed/citylights/1600/900" },
+  ];
+
+  const [bgImage, setBgImage] = useState<string | null>(null);
+  const [bgMenuOpen, setBgMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("chat_bg_image");
+    if (saved) {
+      setBgImage(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (bgImage) {
+      root.style.setProperty("--bg-image", `url(${bgImage})`);
+      root.style.setProperty("--bg-image-opacity", "0.35");
+    } else {
+      root.style.setProperty("--bg-image", "none");
+      root.style.setProperty("--bg-image-opacity", "0");
+    }
+  }, [bgImage]);
+
+  const applyBackground = (url: string | null) => {
+    setBgImage(url);
+    if (url) {
+      localStorage.setItem("chat_bg_image", url);
+    } else {
+      localStorage.removeItem("chat_bg_image");
+    }
+    setBgMenuOpen(false);
+  };
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<string | null>("Đang tải...");
@@ -291,7 +336,7 @@ function App() {
           </button>
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
+        <div className="scrollbar" style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
           {sessions.map((session) => (
             <div
               key={session.id}
@@ -482,9 +527,34 @@ function App() {
               </div>
             </div>
             <div className="header-right">
-              <button className="mobile-toggle" onClick={toggleTheme} aria-label="Đổi theme">
+              <button className="action-btn" onClick={toggleTheme} aria-label="Đổi theme">
                 {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
               </button>
+              <div style={{ position: "relative" }}>
+                <button className="action-btn" onClick={() => setBgMenuOpen((v) => !v)} aria-label="Đổi background">
+                  🖼️ Background
+                </button>
+                {bgMenuOpen && (
+                  <div className="bg-menu">
+                    <div className="bg-grid">
+                      {BACKGROUND_IMAGES.map((img) => (
+                        <button
+                          key={img.id}
+                          onClick={() => applyBackground(img.url)}
+                          className={`bg-thumb ${bgImage === img.url ? "selected" : ""}`}
+                          aria-label={`Chọn nền ${img.name}`}
+                        >
+                          <img src={img.url} alt={img.name} loading="lazy" />
+                        </button>
+                      ))}
+                    </div>
+                    <div className="bg-menu-actions">
+                      <button onClick={() => applyBackground(null)} className="action-btn" aria-label="Không dùng ảnh nền">✖ Không nền</button>
+                      <button onClick={() => setBgMenuOpen(false)} className="action-btn" aria-label="Đóng">Đóng</button>
+                    </div>
+                  </div>
+                )}
+              </div>
               {status && (
                 <span className="status status-modern">
                   {status}
