@@ -167,6 +167,11 @@ header {
   color: #e2e8f0;
 }
 
+/* Ensure code text inside pre is high-contrast in light theme */
+[data-theme="light"] .markdown-content pre code {
+  color: #e2e8f0;
+}
+
 [data-theme="light"] .bubble.assistant {
   background: #ffffff;
   border: 1px solid #e2e8f0;

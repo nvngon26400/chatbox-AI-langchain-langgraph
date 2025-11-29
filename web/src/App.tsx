@@ -46,8 +46,8 @@ function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark' || saved === 'light') return saved as 'dark' | 'light';
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    // Default to dark when no saved preference
+    return 'dark';
   });
 
   useEffect(() => {
@@ -231,7 +231,7 @@ function App() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setInput("");
     try {
-      setStatus("Đang gọi API...");
+      setStatus("Chờ tí ...");
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -271,8 +271,8 @@ function App() {
     <div className="app">
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-        <div style={{ padding: "20px", borderBottom: "1px solid #2d2d44" }}>
-          <h2 style={{ margin: "0 0 15px 0", color: "#fff", fontSize: "18px" }}>Chatbot</h2>
+        <div style={{ padding: "20px", borderBottom: "1px solid var(--border)" }}>
+          <h2 style={{ margin: "0 0 15px 0", color: "var(--text)", fontSize: "18px" }}>Chatbot</h2>
           <button
             onClick={createNewChat}
             style={{
@@ -301,14 +301,14 @@ function App() {
                 marginBottom: "8px",
                 borderRadius: "6px",
                 cursor: editingSessionId === session.id ? "default" : "pointer",
-                background: session.id === sessionId ? "#2d2d44" : "transparent",
+                background: session.id === sessionId ? "var(--surface-2)" : "transparent",
                 border: session.id === sessionId ? "1px solid #4a90e2" : "1px solid transparent",
                 transition: "all 0.2s",
                 position: "relative",
               }}
               onMouseEnter={(e) => {
                 if (session.id !== sessionId && editingSessionId !== session.id) {
-                  e.currentTarget.style.background = "#252538";
+                  e.currentTarget.style.background = "var(--surface-2)";
                 }
               }}
               onMouseLeave={(e) => {
@@ -336,10 +336,10 @@ function App() {
                     style={{
                       flex: 1,
                       padding: "6px 8px",
-                      background: "#252538",
-                      border: "1px solid #4a90e2",
+                      background: "var(--surface-2)",
+                      border: "1px solid var(--primary)",
                       borderRadius: "4px",
-                      color: "#fff",
+                      color: "var(--text)",
                       fontSize: "14px",
                     }}
                   />
@@ -377,10 +377,10 @@ function App() {
                 <>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: "#fff", fontSize: "14px", fontWeight: "500", marginBottom: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <div style={{ color: "var(--text)", fontSize: "14px", fontWeight: "500", marginBottom: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {session.title}
                       </div>
-                      <div style={{ color: "#888", fontSize: "12px" }}>
+                      <div style={{ color: "var(--muted)", fontSize: "12px" }}>
                         {formatDate(session.updated_at)} • {session.message_count} tin nhắn
                       </div>
                     </div>
@@ -394,15 +394,15 @@ function App() {
                         style={{
                           background: "transparent",
                           border: "none",
-                          color: "#888",
+                          color: "var(--muted)",
                           cursor: "pointer",
                           padding: "4px",
                           fontSize: "16px",
                           lineHeight: 1,
                           borderRadius: "4px",
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
-                        onMouseLeave={(e) => e.currentTarget.style.color = "#888"}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "var(--text)"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--muted)"}
                       >
                         ⋮
                       </button>
@@ -412,8 +412,8 @@ function App() {
                           position: "absolute",
                           right: 0,
                           top: "100%",
-                          background: "#1e1e2e",
-                          border: "1px solid #2d2d44",
+                          background: "var(--surface)",
+                          border: "1px solid var(--border)",
                           borderRadius: "6px",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
                           zIndex: 100,
@@ -429,11 +429,11 @@ function App() {
                               padding: "8px 12px",
                               background: "transparent",
                               border: "none",
-                              color: "#e2e8f0",
+                              color: "var(--text)",
                               cursor: "pointer",
                               fontSize: "13px",
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = "#2d2d44"}
+                            onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"}
                             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                           >
                             ✏️ Đổi tên
@@ -496,7 +496,7 @@ function App() {
 
         <section className="chat-window" style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
           {messages.length === 0 ? (
-            <div style={{ textAlign: "center", color: "#888", marginTop: "50px" }}>
+            <div style={{ textAlign: "center", color: "var(--muted)", marginTop: "50px" }}>
               <p>Chưa có tin nhắn nào. Bắt đầu cuộc trò chuyện!</p>
             </div>
           ) : (
